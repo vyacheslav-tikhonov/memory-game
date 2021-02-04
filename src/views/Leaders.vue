@@ -21,25 +21,14 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import { Leader } from '@/components/Game/types';
-import { getHumanTimeFromSeconds } from '@/utils/time';
+import { getHumanTimeFromSeconds, modifyHumanTimeToString } from '@/utils/time';
 
 @Component
 export default class Leaders extends Vue {
   private leaders: Leader[] = [];
 
-  private getTime(seconds: number) {
-    const time = getHumanTimeFromSeconds(seconds);
-    let result = '';
-    if (time[0]) {
-      result += `${time[0]} Days`;
-    }
-    if (time[1]) {
-      result += `${time[1]} Hours `;
-    }
-    if (time[2]) {
-      result += `${time[2]} Minuts `;
-    }
-    return result += `${time[3]} Seconds`;
+  private getTime(seconds: number): string {
+    return modifyHumanTimeToString(seconds);
   }
 
   private mounted() {

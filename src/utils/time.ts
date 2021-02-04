@@ -2,6 +2,12 @@ const day = 60 * 60 * 24;
 const hour = 60 * 60
 const minute = 60
 
+enum TimeNames {
+  Days,
+  Hours,
+  Minuts,
+  Seconds
+}
 
 function getHumanTimeFromSeconds(seconds: number): [number, number, number, number] {
   const days = Math.floor(seconds / day);
@@ -16,4 +22,16 @@ function getHumanTimeFromSeconds(seconds: number): [number, number, number, numb
   return [days, hours, minutes, remainder];
 }
 
-export { getHumanTimeFromSeconds };
+function modifyHumanTimeToString(seconds: number): string {
+  const timePeriods = getHumanTimeFromSeconds(seconds);
+  let result = '';
+
+  timePeriods.forEach((element: number, index: number) => {
+    if (element) {
+      result += `${TimeNames[index]} ${element} `;
+    }
+  })
+  return result;
+}
+
+export { getHumanTimeFromSeconds, modifyHumanTimeToString };
