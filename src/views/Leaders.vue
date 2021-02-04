@@ -45,7 +45,7 @@ export default class Leaders extends Vue {
   private mounted() {
     const leadersJson = localStorage.getItem('leaders');
     if (leadersJson) {
-      this.leaders = JSON.parse(leadersJson);
+      this.leaders = JSON.parse(leadersJson).sort();
     }
   }
 

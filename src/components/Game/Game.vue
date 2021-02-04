@@ -96,15 +96,14 @@ export default class Game extends Vue {
   }
 
   private onResetGame() {
+    this.onPauseGame()
     this.initCards();
     this.timer.clearTimer();
-    this.displayedIndexes = [];
-    this.currentElementIndex = null;
-    this.cardForHiding = null;
     this.victory = false;
     this.leadersPlace = null;
     this.showLeadersDialog = false;
     this.gameName = '';
+    this.onStartGame();
   }
 
   private onStartGame() {
@@ -132,16 +131,15 @@ export default class Game extends Vue {
         leaders = JSON.parse(leadersJson);
       }
 
-      const newLeaders = leaders.slice(0, this.leadersPlace);
       const time = this.timer.getTime();
 
-      newLeaders.push({
+      leaders.push({
         time,
         gameName: this.gameName,
       });
-      newLeaders.concat(leaders.slice(this.leadersPlace));
+      leaders.sort();
 
-      leadersJson = JSON.stringify(newLeaders.slice(0, 10));
+      leadersJson = JSON.stringify(leaders.slice(0, 10));
       localStorage.setItem('leaders', leadersJson);
     }
   }
