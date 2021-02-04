@@ -5,7 +5,7 @@ const minute = 60
 enum TimeNames {
   Days,
   Hours,
-  Minuts,
+  Minutes,
   Seconds
 }
 

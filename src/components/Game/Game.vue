@@ -1,31 +1,22 @@
 <template>
   <div class="game">
     <div class="nav">
-      <router-link to="/leaders">Leaders</router-link>
+      <router-link to="/leaders">
+        <img class="icon" alt="Leaders" src="../../assets/icons/trophy.svg">
+      </router-link>
     </div>
+
     <div class="game__buttons">
-      <div v-if="!victory">
-        <div v-show=!isGameRunning>
-          <button
-            @click="onStartGame()"
-          >
-            Start
-          </button>
-        </div>
+      <div
+        v-if="!victory"
+      >
         <div v-show=isGameRunning>
-          <button
+          <Button
             @click="onPauseGame()"
           >
             Pause
-          </button>
+          </Button>
         </div>
-      </div>
-      <div v-if="victory">
-        <button
-          @click="onResetGame()"
-        >
-          New game
-        </button>
       </div>
     </div>
 
@@ -33,8 +24,31 @@
       <Timer ref="timer" />
     </div>
 
-    <div v-if="victory">Victory!</div>
-
+    <div class="cards-container">
+      <div
+        class="centered-buttons"
+      >
+        <div
+          class="victory"
+          v-if="victory">
+          Victory!
+        </div>
+        <div
+          v-show="!isGameRunning && !victory">
+          <Button
+            @click="onStartGame()"
+          >
+            Start
+          </Button>
+        </div>
+        <div v-if="victory">
+          <Button
+            @click="onResetGame()"
+          >
+            New game
+          </Button>
+        </div>
+      </div>
     <div
       class="cards"
     >
@@ -46,20 +60,34 @@
         <GameCard
           v-if="card !== 0"
           :show="displayedIndexes.includes(index)"
+          :clickable="!isFreezing"
           :name="card"
           @click="onClick(index)"
         />
       </div>
     </div>
+    </div>
 
   <div
     v-if="showLeadersDialog"
-    class="game__leaders-dialog">
-    <p>Save game in a leaders` table</p>
-    <input v-model="gameName">
-    <button @click="onSaveGame()">
-      Save
-    </button>
+    class="leaders-dialog">
+    <p>Save your results</p>
+    <input
+      class="leaders-dialog__input"
+      placeholder="Name"
+      v-model="gameName"
+    >
+
+    <div class="leaders-dialog__buttons">
+      <Button @click="onCloseDialog()">
+        Close
+      </Button>
+      <Button
+        :disabled="isNameNotEmpty"
+        @click="onSaveGame()">
+        Save
+      </Button>
+    </div>
   </div>
 
   </div>
@@ -71,9 +99,10 @@ import Timer from '@/components/Game/Timer/Timer.vue';
 import GameCard from '@/components/ui/cards/GameCard/GameCard.vue';
 import { shuffleArray } from '@/utils/array';
 import { Leader } from './types';
+import Button from '@/components/ui/button/Button.vue';
 
 @Component({
-  components: { Timer, GameCard },
+  components: { Timer, GameCard, Button },
 })
 export default class Game extends Vue {
   @Ref('timer') readonly timer!: Timer;
@@ -90,6 +119,10 @@ export default class Game extends Vue {
   private cardForHiding: null | {time: number; index: number} = null;
 
   private cards: number[] = [];
+
+  private get isNameNotEmpty() {
+    return this.gameName.length <= 0;
+  }
 
   private checkVictory() {
     return !this.cards.reduce((sum, current) => sum + current , 0);
@@ -119,6 +152,10 @@ export default class Game extends Vue {
     this.displayedIndexes = [];
     this.isFreezing = true;
     this.timer.stopTimer();
+  }
+
+  private onCloseDialog() {
+    this.showLeadersDialog = false;
   }
 
   private onSaveGame() {
@@ -260,11 +297,13 @@ export default class Game extends Vue {
 .game {
   &__buttons {
     display: flex;
-    gap: 10px;
-    padding-bottom: 10px;
+    justify-content: center;
+    height: 40px;
   }
   &__timer {
-    padding: 20px 0;
+    text-align: center;
+    height: 40px;
+    padding: 5px 0;
   }
 }
 
@@ -273,13 +312,68 @@ export default class Game extends Vue {
 }
 
 .cards {
+  width: max-content;
   display: grid;
+  justify-content: center;
   grid-template-columns: repeat(6, 105px);
   grid-row-gap: 5px;
+  position: relative;
 }
 
 .card-container {
   width: 100px;
   height: 100px;
+}
+
+.cards-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.centered-buttons {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.icon {
+  height: 24px;
+  width: 24px;
+}
+
+.leaders-dialog {
+  font-size: 18px;
+  background: #fff;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 1px 1px 2px #c6c6c6;
+  width: max-content;
+  padding: 20px;
+  width: 340px;
+  border-radius: 4px;
+  z-index: 2;
+
+  &__input {
+    width: 320px;
+  }
+
+  &__buttons {
+    padding: 10px 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+}
+
+.victory {
+  font-size: 24px;
+  color: rgb(132, 206, 235);
+  margin: 10px 0;
 }
 </style>

@@ -1,18 +1,22 @@
 <template>
   <div class="leaders">
     <div class="nav">
-      <router-link to="/">Game</router-link>
+      <router-link to="/">
+        <img class="icon" alt="Game" src="../assets/icons/games.svg">
+      </router-link>
     </div>
 
-    <div class="table">
-      <div class="table__title">Leaders:</div>
-      <div
-        class="table__row"
-        :key="index"
-        v-for="(leader, index) in leaders"
-      >
-        <div>{{ leader.gameName }}</div>
-        <div>{{ getTime(leader.time) }}</div>
+    <div class="table-container">
+      <div class="table">
+        <div class="table__title">Leaders:</div>
+        <div
+          class="table__row"
+          :key="index"
+          v-for="(leader, index) in leaders"
+        >
+          <div>{{ leader.gameName }}</div>
+          <div>{{ getTime(leader.time) }}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -46,15 +50,28 @@ export default class Leaders extends Vue {
   padding-bottom: 20px;
 }
 
+.table-container {
+  display: flex;
+  justify-content: center;
+}
+
 .table {
+  font-size: 16px;
   &__title {
+    font-size: 22px;
     padding-bottom: 10px;
+    text-align: center;
   }
   &__row {
     padding-bottom: 5px;
     display: flex;
-    width: 300px;
-    justify-content: space-between;
+    gap: 30px;
+    justify-content: space-around;
   }
+}
+
+.icon {
+  height: 24px;
+  width: 24px;
 }
 </style>

@@ -48,8 +48,9 @@ export default class Timer extends Vue {
 <style scoped lang="scss">
 .timer {
   &_time {
+    font-weight: 300;
     color: #000;
-    font-size: 14px;
+    font-size: 16px;
   }
 }
 </style>
