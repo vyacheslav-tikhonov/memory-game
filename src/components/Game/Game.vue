@@ -1,21 +1,24 @@
 <template>
   <div class="game">
+    <router-link to="/leaders">Leaders</router-link>
     <div class="game__buttons">
-      <div v-show=!isGameRunning>
-        <button
-          @click="onStartGame()"
-        >
-          Start
-        </button>
+      <div v-if="!victory">
+        <div v-show=!isGameRunning>
+          <button
+            @click="onStartGame()"
+          >
+            Start
+          </button>
+        </div>
+        <div v-show=isGameRunning>
+          <button
+            @click="onPauseGame()"
+          >
+            Pause
+          </button>
+        </div>
       </div>
-      <div v-show=isGameRunning>
-        <button
-          @click="onPauseGame()"
-        >
-          Pause
-        </button>
-      </div>
-      <div>
+      <div v-if="victory">
         <button
           @click="onResetGame()"
         >
@@ -27,6 +30,8 @@
     <div class="game__timer">
       <Timer ref="timer" />
     </div>
+
+    <div v-if="victory">Victory!</div>
 
     <div
       class="cards"
@@ -45,6 +50,16 @@
       </div>
     </div>
 
+  <div
+    v-if="showLeadersDialog"
+    class="game__leaders-dialog">
+    <p>Save game in a leaders` table</p>
+    <input v-model="gameName">
+    <button @click="onSaveGame()">
+      Save
+    </button>
+  </div>
+
   </div>
 </template>
 
@@ -53,6 +68,7 @@ import { Vue, Component, Ref } from 'vue-property-decorator';
 import Timer from '@/components/Game/Timer/Timer.vue';
 import GameCard from '@/components/ui/cards/GameCard/GameCard.vue';
 import { shuffleArray } from '@/utils/array';
+import { Leader } from './types';
 
 @Component({
   components: { Timer, GameCard },
@@ -62,6 +78,10 @@ export default class Game extends Vue {
 
   private isGameRunning = false;
   private isFreezing = true;
+  private victory = false;
+  private leadersPlace: number | null = null;
+  private showLeadersDialog = false;
+  private gameName = '';
 
   private displayedIndexes: number[] = []
   private currentElementIndex: number | null = null;
@@ -79,6 +99,10 @@ export default class Game extends Vue {
     this.displayedIndexes = [];
     this.currentElementIndex = null;
     this.cardForHiding = null;
+    this.victory = false;
+    this.leadersPlace = null;
+    this.showLeadersDialog = false;
+    this.gameName = '';
   }
 
   private onStartGame() {
@@ -96,6 +120,30 @@ export default class Game extends Vue {
     this.timer.stopTimer();
   }
 
+  private onSaveGame() {
+    this.showLeadersDialog = false;
+    if (this.leadersPlace !== null) {
+      let leaders: Leader[] = [];
+      let leadersJson = localStorage.getItem('leaders');
+
+      if (leadersJson) {
+        leaders = JSON.parse(leadersJson);
+      }
+
+      const newLeaders = leaders.slice(0, this.leadersPlace);
+      const time = this.timer.getTime();
+
+      newLeaders.push({
+        time,
+        gameName: this.gameName,
+      });
+      newLeaders.concat(leaders.slice(this.leadersPlace));
+
+      leadersJson = JSON.stringify(newLeaders.slice(0, 10));
+      localStorage.setItem('leaders', leadersJson);
+    }
+  }
+
   private initCards() {
     const cards: number[] = [];
     for (let i = 1; i <= 18; i++) {
@@ -103,6 +151,33 @@ export default class Game extends Vue {
     }
 
     this.cards = shuffleArray(cards);
+  }
+
+  private recordVictory() {
+    this.victory = true;
+    this.timer.stopTimer();
+
+    const time = this.timer.getTime();
+
+    const leadersPlace = this.checkLeadersPlace(time);
+    if (leadersPlace < 10) {
+      this.leadersPlace = leadersPlace;
+      this.showLeadersDialog = true;
+    }
+  }
+
+  private checkLeadersPlace(time: number) {
+    const leadersJson = localStorage.getItem('leaders');
+    if (leadersJson) {
+      const leaders = JSON.parse(leadersJson);
+      leaders.forEach((leader: Leader, index: number) => {
+        if (time < leader.time) {
+          return index;
+        }
+      });
+      return leaders.length;
+    }
+    return 0;
   }
 
   private onClick(index: number) {
@@ -127,7 +202,7 @@ export default class Game extends Vue {
             this.cardForHiding = null;
             this.isFreezing = false;
             if (this.checkVictory()) {
-              this.timer.stopTimer();
+              this.recordVictory()
             }
           }
           , 1000);
