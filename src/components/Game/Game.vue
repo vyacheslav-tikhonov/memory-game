@@ -182,49 +182,59 @@ export default class Game extends Vue {
     return 0;
   }
 
-  private onClick(index: number) {
-    if (this.isFreezing) {
-      return
-    }
-
-    if (this.currentElementIndex !== null) {
-      if (
-        this.currentElementIndex !== index &&
-        this.cards[this.currentElementIndex] === this.cards[index]
-        ) {
-        this.isFreezing = true;   
-        this.displayedIndexes.push(index)
-        setTimeout(() => { 
-            if(this.currentElementIndex !== null) {
-              this.cards[this.currentElementIndex] = 0
-            }
-            this.cards[index] = 0
-            this.displayedIndexes = [];
-            this.currentElementIndex = null;
-            this.cardForHiding = null;
-            this.isFreezing = false;
-            if (this.checkVictory()) {
-              this.recordVictory()
-            }
-          }
-          , 1000);
-      } else {
-        this.isFreezing = true;
-        this.displayedIndexes.push(index);
-        setTimeout(() => { 
-          this.currentElementIndex = null;
-          this.displayedIndexes = [];
-          this.cardForHiding = null;
-          this.isFreezing = false;
-          }
-          , 500);
+  private clearEqual(index: number) {
+    this.isFreezing = true;   
+    this.displayedIndexes.push(index)
+    setTimeout(() => { 
+        if(this.currentElementIndex !== null) {
+          this.cards[this.currentElementIndex] = 0
+        }
+        this.cards[index] = 0
+        this.displayedIndexes = [];
+        this.currentElementIndex = null;
+        this.cardForHiding = null;
+        this.isFreezing = false;
+        if (this.checkVictory()) {
+          this.recordVictory()
+        }
       }
-    } else {
-      this.currentElementIndex = index;
-      this.displayedIndexes = [index];
-      this.cardForHiding = {
-        time: Date.now() + 3000,
-        index,
+      , 1000);
+  }
+
+  private clearNotEqual(index: number) {
+    this.isFreezing = true;
+    this.displayedIndexes.push(index);
+    setTimeout(() => { 
+      this.currentElementIndex = null;
+      this.displayedIndexes = [];
+      this.cardForHiding = null;
+      this.isFreezing = false;
+      }
+      , 500);
+  }
+
+  private setCurrentIndex(index: number) {
+    this.currentElementIndex = index;
+    this.displayedIndexes = [index];
+    this.cardForHiding = {
+      time: Date.now() + 3000,
+      index,
+    }
+  }
+
+  private onClick(index: number) {
+    if (!this.isFreezing) {
+      if (this.currentElementIndex !== null) {
+        if (
+          this.currentElementIndex !== index &&
+          this.cards[this.currentElementIndex] === this.cards[index]
+          ) {
+            this.clearEqual(index);
+        } else {
+          this.clearNotEqual(index);
+        }
+      } else {
+        this.setCurrentIndex(index);
       }
     }
   }
