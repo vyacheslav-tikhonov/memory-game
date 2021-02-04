@@ -21,7 +21,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import { Leader } from '@/components/Game/types';
-import { getHumanTimeFromSeconds, modifyHumanTimeToString } from '@/utils/time';
+import { modifyHumanTimeToString } from '@/utils/time';
 
 @Component
 export default class Leaders extends Vue {

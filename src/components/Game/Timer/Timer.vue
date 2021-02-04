@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import { getHumanTimeFromSeconds, modifyHumanTimeToString } from '@/utils/time';
+import { modifyHumanTimeToString } from '@/utils/time';
 
 @Component({})
 export default class Timer extends Vue {
