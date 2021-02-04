@@ -1,14 +1,19 @@
 <template>
-  <div>
-    <router-link to="/">Game</router-link>
-    <div>
-      Leaders:
+  <div class="leaders">
+    <div class="nav">
+      <router-link to="/">Game</router-link>
     </div>
-    <div
-      :key="index"
-      v-for="(leader, index) in leaders"
-    >
-      {{ leader.gameName }} {{ getTime(leader.time) }}
+
+    <div class="table">
+      <div class="table__title">Leaders:</div>
+      <div
+        class="table__row"
+        :key="index"
+        v-for="(leader, index) in leaders"
+      >
+        <div>{{ leader.gameName }}</div>
+        <div>{{ getTime(leader.time) }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -46,3 +51,21 @@ export default class Leaders extends Vue {
 
 }
 </script>
+
+<style scoped lang="scss">
+.nav {
+  padding-bottom: 20px;
+}
+
+.table {
+  &__title {
+    padding-bottom: 10px;
+  }
+  &__row {
+    padding-bottom: 5px;
+    display: flex;
+    width: 300px;
+    justify-content: space-between;
+  }
+}
+</style>

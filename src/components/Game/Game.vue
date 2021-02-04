@@ -1,6 +1,8 @@
 <template>
   <div class="game">
-    <router-link to="/leaders">Leaders</router-link>
+    <div class="nav">
+      <router-link to="/leaders">Leaders</router-link>
+    </div>
     <div class="game__buttons">
       <div v-if="!victory">
         <div v-show=!isGameRunning>
@@ -257,11 +259,17 @@ export default class Game extends Vue {
     padding: 20px 0;
   }
 }
+
+.nav {
+  padding-bottom: 20px;
+}
+
 .cards {
   display: grid;
   grid-template-columns: repeat(6, 105px);
   grid-row-gap: 5px;
 }
+
 .card-container {
   width: 100px;
   height: 100px;
