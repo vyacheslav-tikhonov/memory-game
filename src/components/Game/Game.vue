@@ -73,6 +73,7 @@
     class="leaders-dialog">
     <p>Save your results</p>
     <input
+      @keydown.enter="onSaveGame()"
       class="leaders-dialog__input"
       placeholder="Name"
       v-model="gameName"
@@ -83,7 +84,7 @@
         Close
       </Button>
       <Button
-        :disabled="isNameNotEmpty"
+        :disabled="!isNameNotEmpty"
         @click="onSaveGame()">
         Save
       </Button>
@@ -111,7 +112,7 @@ export default class Game extends Vue {
   private isFreezing = true;
   private victory = false;
   private leadersPlace: number | null = null;
-  private showLeadersDialog = false;
+  private showLeadersDialog = true;
   private gameName = '';
 
   private displayedIndexes: number[] = []
@@ -121,7 +122,7 @@ export default class Game extends Vue {
   private cards: number[] = [];
 
   private get isNameNotEmpty() {
-    return this.gameName.length <= 0;
+    return this.gameName.length > 0;
   }
 
   private checkVictory() {
@@ -159,25 +160,27 @@ export default class Game extends Vue {
   }
 
   private onSaveGame() {
-    this.showLeadersDialog = false;
-    if (this.leadersPlace !== null) {
-      let leaders: Leader[] = [];
-      let leadersJson = localStorage.getItem('leaders');
+    if (this.isNameNotEmpty) {
+      this.showLeadersDialog = false;
+      if (this.leadersPlace !== null) {
+        let leaders: Leader[] = [];
+        let leadersJson = localStorage.getItem('leaders');
 
-      if (leadersJson) {
-        leaders = JSON.parse(leadersJson);
+        if (leadersJson) {
+          leaders = JSON.parse(leadersJson);
+        }
+
+        const time = this.timer.getTime();
+
+        leaders.push({
+          time,
+          gameName: this.gameName,
+        });
+        leaders.sort();
+
+        leadersJson = JSON.stringify(leaders.slice(0, 10));
+        localStorage.setItem('leaders', leadersJson);
       }
-
-      const time = this.timer.getTime();
-
-      leaders.push({
-        time,
-        gameName: this.gameName,
-      });
-      leaders.sort();
-
-      leadersJson = JSON.stringify(leaders.slice(0, 10));
-      localStorage.setItem('leaders', leadersJson);
     }
   }
 
