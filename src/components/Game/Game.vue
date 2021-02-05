@@ -112,7 +112,7 @@ export default class Game extends Vue {
   private isFreezing = true;
   private victory = false;
   private leadersPlace: number | null = null;
-  private showLeadersDialog = true;
+  private showLeadersDialog = false;
   private gameName = '';
 
   private displayedIndexes: number[] = []
